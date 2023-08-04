@@ -1,0 +1,141 @@
+CREATE TABLE Customers (
+    UserId VARCHAR(6) PRIMARY KEY,
+    Password VARCHAR(20),
+    UserType VARCHAR(20),
+    LoginStatus INT,
+);
+
+INSERT INTO Customers (UserId,Password,UserType,LoginStatus)
+VALUES ('jnejh','vinay@123','man',1);
+
+Select * from Customers;
+
+EXEC sp_rename 'Customers', 'SRS_TBL_User_Credentials';
+select * from SRS_TBL_User_Credentials;
+
+CREATE TABLE SRS_TBL_User_Profile(
+    UserId varchar(6) ,
+	Firstname varchar(20) NOT NULL,
+	Lastname varchar(20) Not Null,
+	DateofBirth Date Not Null,
+	gender varchar(7) not null,
+	Street varchar(30) not null,
+	Location varchar(20) not null,
+	City varchar(20) not null,
+	State varchar(20) not null,
+	PinCode varchar(10),
+	MobileNo varchar(10),
+	EmailId varchar(30) not null
+    
+    FOREIGN KEY (UserId) REFERENCES SRS_TBL_User_Credentials(userId)
+);
+
+INSERT INTO SRS_TBL_User_Profile (UserId,Firstname,Lastname,DateofBirth,gender,Street,Location,City,State,PinCode,MobileNo,EmailId)
+VALUES ('jnejh','karivena','vinay kumar','1990-01-15','Male','vidya','NDYKOTKUR','kurnool','AP','74738','7013731005','knightkings77@gmail.com');
+
+
+select * from  SRS_TBL_User_Profile;
+INSERT INTO SRS_TBL_User_Profile (UserId,Firstname,Lastname,DateofBirth,gender,Street,Location,City,State,PinCode,MobileNo,EmailId)
+VALUES ('jnewe','karivena','vinay kumar','1990-01-15','Male','vidya','NDYKOTKUR','kurnool','AP','74738','7013731005','knightkings77@gmail.com');
+
+--- creating a other table SRS_TBL_creditCard
+
+CREATE TABLE SRS_TBL_creditCard(
+    CreditCardNumber varchar(16) ,
+	ValidForm varchar(15) NOT NULL,
+	ValidTo varchar(15) Not Null,
+	Balance int Not null,
+	userId varchar(6),
+	
+    FOREIGN KEY (UserId) REFERENCES SRS_TBL_User_Credentials(userId)
+);
+
+-- inserting the data in to the SRS_TBL_creditCard table!
+
+INSERT INTO SRS_TBL_creditCard (CreditCardNumber,ValidForm,ValidTo,Balance,userId)
+VALUES ('3983498','no','kin',28000,'jnejh');
+
+--viewing the created table
+select * from SRS_TBL_creditCard;
+
+ /*first we create a table with primary keys and then we will create 
+  or add the forigen keys after creating the primary key*/
+
+create table SRS_TBL_Reservation(
+	ReservationId varchar(6) primary key,
+	ScheduleId varchar(8),
+	UserId varchar(6),
+	BookingDate date not null,
+	JourneyDate date not null,
+	NoOfSeats int not null,
+	TotalFare int not null,
+	BookingStatus varchar(10)
+
+	FOREIGN KEY (UserId) REFERENCES SRS_TBL_User_Credentials(userId)
+
+);
+-- in the above table i din't make the SxheduleId as a forigen
+--key because we din't even created the primary key for it in the other table
+
+--- Now i need to create the SRS_TBL_Ship
+create table SRS_TBL_Ship(
+	ShipId varchar(6) primary key not null,
+	ShipName varchar(15) not null,
+	SeatingCapacity int not null,
+	ReservationCapacity int not null
+
+);
+
+----- Now i need to create the SRS_TBL_Route
+create table SRS_TBL_Route(
+	RouteId varchar(8) primary key not null,
+	Source varchar(20) not null,
+	Destination varchar(20) not null,
+	TravelDuration  varchar(10) not null,
+	Fare int not null
+
+);
+
+---- Now i need to create a SRS_TBL_Schedule
+create table SRS_TBL_Schedule(
+	ScheduleId varchar(8) primary key not null,
+	ShipId varchar(6),
+	RouteId varchar(8),
+	StartDate date not null,
+	foreign key (ShipId) references SRS_TBL_Ship(ShipId),
+	foreign key (RouteId) references SRS_TBL_Route(RouteId)
+
+	
+
+);
+
+--- now we can create the foreign key to the table columns of SRS_TBL_Reservation
+ALTER TABLE SRS_TBL_Reservation
+ADD CONSTRAINT FK_ConstraintName
+FOREIGN KEY (ScheduleId) REFERENCES SRS_TBL_Schedule(ScheduleId);
+
+--- now lastly i need to add the last table that is SRS_TBL_Passenger
+
+create table SRS_TBL_Passenger(
+	ReservationId varchar(6),
+	ScheduleId varchar(8),
+	Name varchar(20) not null,
+	Age int not null,
+	Gender varchar(7)
+
+	foreign key (ScheduleId) references SRS_TBL_Schedule(ScheduleId),
+	foreign key (ReservationId) references SRS_TBL_Reservation(ReservationId),
+
+
+);
+
+
+---- Now the whole table diagram has been implemented!!
+
+
+
+
+
+
+
+
